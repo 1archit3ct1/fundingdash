@@ -1,8 +1,8 @@
 {
   "_meta": {
     "description": "Agents update this file. Keep it as an observation map for implementation progress.",
-    "last_updated": "2026-03-26T00:30:00Z",
-    "agent_current_task": "step1_security.gemini_key_client_exposure",
+    "last_updated": "2026-03-26T01:05:00Z",
+    "agent_current_task": "step1_security.input_query_sanitization",
     "agent_current_step": "completed"
   },
   "steps": {
@@ -15,8 +15,8 @@
           "note": "Gemini calls moved to server /api/validate endpoint; browser now calls backend and no longer reads API key."
         },
         "input_query_sanitization": {
-          "status": "red",
-          "note": "No explicit sanitization/length guard for user query terms and generated prompts."
+          "status": "green",
+          "note": "Added client/server input policies with length + character constraints, URL normalization, and clear 400 malformed-input errors."
         },
         "http_security_headers": {
           "status": "red",
