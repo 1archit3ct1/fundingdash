@@ -1,14 +1,14 @@
 {
   "_meta": {
     "description": "Agents update this file. Keep it as an observation map for implementation progress.",
-    "last_updated": "2026-03-26T01:20:00Z",
-    "agent_current_task": "step1_security.http_security_headers",
+    "last_updated": "2026-03-26T01:40:00Z",
+    "agent_current_task": "step2_funding_core.real_data_provider",
     "agent_current_step": "completed"
   },
   "steps": {
     "step1_security": {
       "label": "Security Baseline",
-      "overall": "red",
+      "overall": "green",
       "items": {
         "gemini_key_client_exposure": {
           "status": "green",
@@ -29,8 +29,8 @@
       "overall": "red",
       "items": {
         "real_data_provider": {
-          "status": "red",
-          "note": "Accelerator list is static; no normalized funding-program source endpoint yet."
+          "status": "green",
+          "note": "Added dataset-backed /api/funding-programs endpoint and frontend now renders from API data instead of hardcoded list."
         },
         "validation_resilience": {
           "status": "partial",

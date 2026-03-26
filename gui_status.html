@@ -32,14 +32,14 @@
   <main>
     <header>
       <h1>FundingDash Agent Status</h1>
-      <div class='meta'>Updated: 2026-03-26 22:13:35 UTC<br/>Agent task: step1_security.http_security_headers | Agent step: completed</div>
+      <div class='meta'>Updated: 2026-03-26 22:20:48 UTC<br/>Agent task: step2_funding_core.real_data_provider | Agent step: completed</div>
     </header>
     <div class='grid'>
       
             <section class='card'>
               <div class='card-head'>
                 <h2>Security Baseline</h2>
-                <span class='pill red'>red</span>
+                <span class='pill green'>green</span>
               </div>
               <table>
                 <thead><tr><th>Item</th><th>Status</th><th>Note</th></tr></thead>
@@ -54,7 +54,7 @@
               </div>
               <table>
                 <thead><tr><th>Item</th><th>Status</th><th>Note</th></tr></thead>
-                <tbody><tr><td>real_data_provider</td><td><span class='pill red'>red</span></td><td>Accelerator list is static; no normalized funding-program source endpoint yet.</td></tr><tr><td>validation_resilience</td><td><span class='pill partial'>partial</span></td><td>Current validation depends on model output; no deterministic fallback checker.</td></tr><tr><td>freshness_persistence</td><td><span class='pill red'>red</span></td><td>No persisted cache of last verification run across sessions.</td></tr></tbody>
+                <tbody><tr><td>real_data_provider</td><td><span class='pill green'>green</span></td><td>Added dataset-backed /api/funding-programs endpoint and frontend now renders from API data instead of hardcoded list.</td></tr><tr><td>validation_resilience</td><td><span class='pill partial'>partial</span></td><td>Current validation depends on model output; no deterministic fallback checker.</td></tr><tr><td>freshness_persistence</td><td><span class='pill red'>red</span></td><td>No persisted cache of last verification run across sessions.</td></tr></tbody>
               </table>
             </section>
             
