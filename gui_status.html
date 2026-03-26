@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1' />
+  <title>FundingDash Status</title>
+  <style>
+    :root {
+      --bg:#f6f6f3; --card:#ffffff; --text:#1f2328; --muted:#5e6873;
+      --line:#d9dee4; --green:#1f883d; --red:#cf222e; --amber:#9a6700;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font:14px/1.45 Segoe UI, system-ui, sans-serif; background:var(--bg); color:var(--text); }
+    main { max-width:1200px; margin:0 auto; padding:24px; }
+    header { display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-bottom:16px; }
+    h1 { margin:0; font-size:28px; }
+    .meta { color:var(--muted); font-size:12px; }
+    .grid { display:grid; grid-template-columns:1fr; gap:14px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+    .card-head { display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-bottom:1px solid var(--line); }
+    .card-head h2 { margin:0; font-size:16px; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { font-size:12px; color:var(--muted); }
+    .pill { border-radius:999px; padding:2px 10px; font-size:12px; font-weight:600; text-transform:uppercase; }
+    .pill.green { background:#dafbe1; color:var(--green); }
+    .pill.partial { background:#fff8c5; color:var(--amber); }
+    .pill.red { background:#ffebe9; color:var(--red); }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>FundingDash Agent Status</h1>
+      <div class='meta'>Updated: 2026-03-26 21:46:34 UTC<br/>Agent task: None | Agent step: None</div>
+    </header>
+    <div class='grid'>
+      
+            <section class='card'>
+              <div class='card-head'>
+                <h2>Security Baseline</h2>
+                <span class='pill red'>red</span>
+              </div>
+              <table>
+                <thead><tr><th>Item</th><th>Status</th><th>Note</th></tr></thead>
+                <tbody><tr><td>gemini_key_client_exposure</td><td><span class='pill red'>red</span></td><td>Client code initializes Gemini directly with process.env; move key usage server-side.</td></tr><tr><td>input_query_sanitization</td><td><span class='pill red'>red</span></td><td>No explicit sanitization/length guard for user query terms and generated prompts.</td></tr><tr><td>http_security_headers</td><td><span class='pill red'>red</span></td><td>No API server configured with standard security headers and CORS restrictions.</td></tr></tbody>
+              </table>
+            </section>
+            
+            <section class='card'>
+              <div class='card-head'>
+                <h2>Funding Tracker Core</h2>
+                <span class='pill red'>red</span>
+              </div>
+              <table>
+                <thead><tr><th>Item</th><th>Status</th><th>Note</th></tr></thead>
+                <tbody><tr><td>real_data_provider</td><td><span class='pill red'>red</span></td><td>Accelerator list is static; no normalized funding-program source endpoint yet.</td></tr><tr><td>validation_resilience</td><td><span class='pill partial'>partial</span></td><td>Current validation depends on model output; no deterministic fallback checker.</td></tr><tr><td>freshness_persistence</td><td><span class='pill red'>red</span></td><td>No persisted cache of last verification run across sessions.</td></tr></tbody>
+              </table>
+            </section>
+            
+            <section class='card'>
+              <div class='card-head'>
+                <h2>Release Readiness</h2>
+                <span class='pill red'>red</span>
+              </div>
+              <table>
+                <thead><tr><th>Item</th><th>Status</th><th>Note</th></tr></thead>
+                <tbody><tr><td>repo_hardening_docs</td><td><span class='pill red'>red</span></td><td>No SECURITY.md and contribution security policy in repo root.</td></tr><tr><td>ci_quality_gate</td><td><span class='pill red'>red</span></td><td>No CI workflow enforcing lint and build before merge.</td></tr><tr><td>cloudflare_link_slot</td><td><span class='pill red'>red</span></td><td>No deployment metadata for publishing live demo link on company site.</td></tr></tbody>
+              </table>
+            </section>
+            
+            <section class='card'>
+              <div class='card-head'>
+                <h2>Azure Option</h2>
+                <span class='pill red'>red</span>
+              </div>
+              <table>
+                <thead><tr><th>Item</th><th>Status</th><th>Note</th></tr></thead>
+                <tbody><tr><td>azure_free_credit_path</td><td><span class='pill red'>red</span></td><td>No documented path for free Azure credits and low-cost hosting setup.</td></tr><tr><td>env_contract</td><td><span class='pill red'>red</span></td><td>No explicit production env contract for frontend and backend split.</td></tr></tbody>
+              </table>
+            </section>
+            
+    </div>
+  </main>
+</body>
+</html>
