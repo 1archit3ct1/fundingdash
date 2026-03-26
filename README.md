@@ -79,3 +79,21 @@ Key rules:
 - Set `publicDemoUrl` in `metadata.json` to the live deployment URL.
 - Add or update the FundingDash demo link on the NEXTAURA Cloudflare website.
 - Verify the public URL serves correctly from desktop and mobile networks.
+
+## Azure Free-Credit Deployment Path
+
+Use this path when applying Azure free credits and keeping monthly cost minimal.
+
+1. Create a resource group in your preferred region.
+2. Deploy frontend with Azure Static Web Apps (free tier when available).
+3. Host the backend API as a minimal Azure Functions app or low-tier App Service.
+4. Set production env vars in Azure settings (never in repo files).
+5. Configure CORS allowlist to the Static Web App domain only.
+6. Validate health and key routes after deployment (`/api/health`, `/api/funding-programs`).
+
+### Credit and Cost Constraints
+
+- Free tiers can change by region and subscription type; confirm limits before go-live.
+- Set budget alerts and spending caps in Cost Management on day one.
+- Keep a rollback path to local or alternate hosting if credits expire.
+- Avoid high-frequency polling jobs that can burn free credits quickly.

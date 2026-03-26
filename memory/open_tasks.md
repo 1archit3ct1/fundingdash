@@ -7,11 +7,6 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Red
 
-### step4_azure_option.azure_free_credit_path
-**What:** Document Azure free-credit deployment option.
-**Files:** `README.md`, `memory/providers.md`
-**Impl:** Add steps for Azure Static Web Apps + minimal API hosting and credit constraints.
-
 ### step4_azure_option.env_contract
 **What:** Define environment variable contract.
 **Files:** `.env.example`, `README.md`
@@ -20,6 +15,9 @@ Find your task, read only the files listed, implement, update status, commit.
 ---
 
 ## Completed
+
+### step4_azure_option.azure_free_credit_path
+Documented Azure Static Web Apps + minimal API hosting path, including free-credit constraints and cost-control guardrails.
 
 ### step3_release_readiness.cloudflare_link_slot
 Added `publicDemoUrl` slot to `metadata.json` and README deployment checklist steps for Cloudflare website demo-link update.
