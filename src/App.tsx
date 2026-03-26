@@ -123,13 +123,22 @@ export default function App() {
         isLive?: boolean;
         confirmedUrl?: string;
         currentPrerequisites?: string;
+        validationSource?: string;
       };
+
+      const nextPrerequisites =
+        typeof result.currentPrerequisites === 'string' && result.currentPrerequisites.trim().length > 0
+          ? result.currentPrerequisites
+          : acc.prerequisites;
+
+      const nextStatus: Accelerator['status'] =
+        result.isLive === true ? 'valid' : result.isLive === false ? 'broken' : 'unknown';
       
       return {
         ...acc,
         url: result.confirmedUrl || acc.url,
-        prerequisites: result.currentPrerequisites || acc.prerequisites,
-        status: result.isLive ? 'valid' : 'broken',
+        prerequisites: nextPrerequisites,
+        status: nextStatus,
         lastChecked: new Date().toLocaleTimeString()
       } as Accelerator;
     } catch (error) {

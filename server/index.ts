@@ -88,6 +88,32 @@ function normalizeAndValidateUrl(value: string): string | null {
   }
 }
 
+async function checkUrlReachability(url: string): Promise<boolean> {
+  try {
+    const headResponse = await fetch(url, {
+      method: 'HEAD',
+      redirect: 'follow',
+    });
+
+    if (headResponse.ok) {
+      return true;
+    }
+  } catch {
+    // Fallback to GET below if HEAD fails due to provider behavior or network edge cases.
+  }
+
+  try {
+    const getResponse = await fetch(url, {
+      method: 'GET',
+      redirect: 'follow',
+    });
+
+    return getResponse.ok;
+  } catch {
+    return false;
+  }
+}
+
 async function loadFundingPrograms(): Promise<Array<{ name: string; url: string; prerequisites: string; category: string }>> {
   const fileText = await readFile(fundingProgramsPath, 'utf-8');
   const parsed = JSON.parse(fileText) as {
@@ -136,8 +162,19 @@ app.post('/api/validate', validateRateLimit, async (req: Request, res: Response)
     return res.status(400).json({ error: 'Malformed input: url must be a valid http/https URL.' });
   }
 
+  const runDeterministicFallback = async () => {
+    const isLive = await checkUrlReachability(normalizedUrl);
+
+    return res.json({
+      isLive,
+      confirmedUrl: normalizedUrl,
+      currentPrerequisites: prerequisites,
+      validationSource: 'deterministic-fallback',
+    });
+  };
+
   if (!apiKey) {
-    return res.status(500).json({ error: 'Server misconfiguration: GEMINI_API_KEY is not set.' });
+    return runDeterministicFallback();
   }
 
   try {
@@ -169,15 +206,22 @@ Return strict JSON with fields: "isLive" (boolean), "confirmedUrl" (string), and
       currentPrerequisites?: string;
     };
 
+    if (typeof parsed.isLive !== 'boolean') {
+      return runDeterministicFallback();
+    }
+
     return res.json({
-      isLive: Boolean(parsed.isLive),
+      isLive: parsed.isLive,
       confirmedUrl: typeof parsed.confirmedUrl === 'string' ? parsed.confirmedUrl : normalizedUrl,
       currentPrerequisites:
-        typeof parsed.currentPrerequisites === 'string' ? parsed.currentPrerequisites : prerequisites,
+        typeof parsed.currentPrerequisites === 'string' && parsed.currentPrerequisites.trim().length > 0
+          ? parsed.currentPrerequisites
+          : prerequisites,
+      validationSource: 'model',
     });
   } catch (error) {
     console.error('[server] Validation failure:', error);
-    return res.status(502).json({ error: 'Validation provider request failed.' });
+    return runDeterministicFallback();
   }
 });
 

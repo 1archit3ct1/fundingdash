@@ -7,11 +7,6 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Red
 
-### step2_funding_core.validation_resilience
-**What:** Add deterministic fallback validation when model validation fails.
-**Files:** `server/index.ts`, `src/App.tsx`
-**Impl:** On AI failure, perform HTTP HEAD/GET check and preserve last known-good prerequisites.
-
 ### step2_funding_core.freshness_persistence
 **What:** Persist last refresh state.
 **Files:** `src/App.tsx`
@@ -45,6 +40,9 @@ Find your task, read only the files listed, implement, update status, commit.
 ---
 
 ## Completed
+
+### step2_funding_core.validation_resilience
+Added deterministic server fallback (HTTP HEAD then GET) when model validation fails or key is missing, while preserving last known-good prerequisites.
 
 ### step2_funding_core.real_data_provider
 Added `datasets/funding_programs.json`, served it via `/api/funding-programs`, and switched frontend rendering to API-provided programs.
