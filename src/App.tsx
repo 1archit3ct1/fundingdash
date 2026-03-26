@@ -18,6 +18,20 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 
 const API_BASE_URL = (import.meta as { env?: { VITE_API_BASE_URL?: string } }).env?.VITE_API_BASE_URL || 'http://localhost:8787';
+const SEARCH_TERM_MAX_LENGTH = 80;
+const SEARCH_DISALLOWED_CHARS = /[^a-zA-Z0-9\s\-'&]/g;
+
+function sanitizeSearchInput(value: string): string {
+  return value.replace(SEARCH_DISALLOWED_CHARS, '').slice(0, SEARCH_TERM_MAX_LENGTH);
+}
+
+function isSafeValidationText(value: string, maxLength: number): boolean {
+  if (value.length === 0 || value.length > maxLength) {
+    return false;
+  }
+
+  return /^[a-zA-Z0-9\s.,'"()\-_/&:+#%!?;=]+$/.test(value);
+}
 
 interface Accelerator {
   name: string;
@@ -57,6 +71,17 @@ export default function App() {
 
   const validateLink = useCallback(async (acc: Accelerator) => {
     try {
+      if (!isSafeValidationText(acc.name, 120) || !isSafeValidationText(acc.prerequisites, 1000)) {
+        throw new Error('Rejected malformed accelerator validation input on client guardrail.');
+      }
+
+      let normalizedUrl = acc.url.trim();
+      try {
+        normalizedUrl = new URL(normalizedUrl).toString();
+      } catch {
+        throw new Error('Rejected malformed URL before validation request.');
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/validate`, {
         method: 'POST',
         headers: {
@@ -64,7 +89,7 @@ export default function App() {
         },
         body: JSON.stringify({
           name: acc.name,
-          url: acc.url,
+          url: normalizedUrl,
           prerequisites: acc.prerequisites,
         }),
       });
@@ -155,7 +180,7 @@ export default function App() {
                 type="text" 
                 placeholder="Search accelerators..." 
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => setSearchTerm(sanitizeSearchInput(e.target.value))}
                 className="w-full bg-zinc-900/50 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:border-orange-500/50 transition-all"
               />
             </div>

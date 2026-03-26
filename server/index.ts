@@ -15,6 +15,30 @@ if (!apiKey) {
 
 const ai = new GoogleGenAI({ apiKey: apiKey || '' });
 
+const MAX_NAME_LENGTH = 120;
+const MAX_PREREQ_LENGTH = 1000;
+const SAFE_TEXT_PATTERN = /^[a-zA-Z0-9\s.,'"()\-_/&:+#%!?;=]+$/;
+
+function isSafeText(value: string, maxLength: number): boolean {
+  if (value.length === 0 || value.length > maxLength) {
+    return false;
+  }
+
+  return SAFE_TEXT_PATTERN.test(value);
+}
+
+function normalizeAndValidateUrl(value: string): string | null {
+  try {
+    const parsed = new URL(value.trim());
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return null;
+    }
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 app.post('/api/validate', async (req: Request, res: Response) => {
   const { name, url, prerequisites } = req.body ?? {};
 
@@ -22,16 +46,39 @@ app.post('/api/validate', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Invalid payload. Expected name, url, and prerequisites as strings.' });
   }
 
+  if (!isSafeText(name, MAX_NAME_LENGTH)) {
+    return res.status(400).json({ error: 'Malformed input: name failed allowed-character or length policy.' });
+  }
+
+  if (!isSafeText(prerequisites, MAX_PREREQ_LENGTH)) {
+    return res.status(400).json({ error: 'Malformed input: prerequisites failed allowed-character or length policy.' });
+  }
+
+  const normalizedUrl = normalizeAndValidateUrl(url);
+  if (!normalizedUrl) {
+    return res.status(400).json({ error: 'Malformed input: url must be a valid http/https URL.' });
+  }
+
   if (!apiKey) {
     return res.status(500).json({ error: 'Server misconfiguration: GEMINI_API_KEY is not set.' });
   }
 
   try {
+    const promptPayload = JSON.stringify(
+      {
+        name,
+        url: normalizedUrl,
+        prerequisites,
+      },
+      null,
+      2,
+    );
+
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Verify if the application link for ${name} is still live and accurate as of March 26, 2026.
-Current URL: ${url}
-Also, confirm the current prerequisites for applying.
+      contents: `Validate accelerator application data from this trusted JSON payload:
+${promptPayload}
+Verify whether the URL is currently live and whether prerequisites are still accurate as of March 26, 2026.
 Return strict JSON with fields: "isLive" (boolean), "confirmedUrl" (string), and "currentPrerequisites" (string).`,
       config: {
         tools: [{ googleSearch: {} }],
@@ -47,7 +94,7 @@ Return strict JSON with fields: "isLive" (boolean), "confirmedUrl" (string), and
 
     return res.json({
       isLive: Boolean(parsed.isLive),
-      confirmedUrl: typeof parsed.confirmedUrl === 'string' ? parsed.confirmedUrl : url,
+      confirmedUrl: typeof parsed.confirmedUrl === 'string' ? parsed.confirmedUrl : normalizedUrl,
       currentPrerequisites:
         typeof parsed.currentPrerequisites === 'string' ? parsed.currentPrerequisites : prerequisites,
     });

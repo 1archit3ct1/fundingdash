@@ -7,11 +7,6 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Red
 
-### step1_security.input_query_sanitization
-**What:** Add validation guardrails for user input and prompt construction.
-**Files:** `src/App.tsx`, `server/index.ts`
-**Impl:** Enforce length and allowed character policy, reject malformed requests with clear errors.
-
 ### step1_security.http_security_headers
 **What:** Add API-layer security defaults.
 **Files:** `package.json`, `server/index.ts`
@@ -60,6 +55,9 @@ Find your task, read only the files listed, implement, update status, commit.
 ---
 
 ## Completed
+
+### step1_security.input_query_sanitization
+Added client/server sanitization guardrails with length + character policies, URL normalization, and explicit malformed-input responses.
 
 ### step1_security.gemini_key_client_exposure
 Moved Gemini validation from browser to `server/index.ts` and switched `src/App.tsx` to call `/api/validate`; documented server/client API env vars.
