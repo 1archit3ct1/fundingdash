@@ -32,7 +32,7 @@
   <main>
     <header>
       <h1>FundingDash Agent Status</h1>
-      <div class='meta'>Updated: 2026-03-26 22:25:46 UTC<br/>Agent task: step2_funding_core.validation_resilience | Agent step: completed</div>
+      <div class='meta'>Updated: 2026-03-26 22:30:12 UTC<br/>Agent task: step2_funding_core.freshness_persistence | Agent step: completed</div>
     </header>
     <div class='grid'>
       
@@ -50,11 +50,11 @@
             <section class='card'>
               <div class='card-head'>
                 <h2>Funding Tracker Core</h2>
-                <span class='pill red'>red</span>
+                <span class='pill green'>green</span>
               </div>
               <table>
                 <thead><tr><th>Item</th><th>Status</th><th>Note</th></tr></thead>
-                <tbody><tr><td>real_data_provider</td><td><span class='pill green'>green</span></td><td>Added dataset-backed /api/funding-programs endpoint and frontend now renders from API data instead of hardcoded list.</td></tr><tr><td>validation_resilience</td><td><span class='pill green'>green</span></td><td>On model failure/missing key, server now falls back to deterministic HEAD/GET URL checks and preserves last known-good prerequisites.</td></tr><tr><td>freshness_persistence</td><td><span class='pill red'>red</span></td><td>No persisted cache of last verification run across sessions.</td></tr></tbody>
+                <tbody><tr><td>real_data_provider</td><td><span class='pill green'>green</span></td><td>Added dataset-backed /api/funding-programs endpoint and frontend now renders from API data instead of hardcoded list.</td></tr><tr><td>validation_resilience</td><td><span class='pill green'>green</span></td><td>On model failure/missing key, server now falls back to deterministic HEAD/GET URL checks and preserves last known-good prerequisites.</td></tr><tr><td>freshness_persistence</td><td><span class='pill green'>green</span></td><td>App now stores versioned accelerator + last-refresh cache in localStorage and rehydrates on startup.</td></tr></tbody>
               </table>
             </section>
             

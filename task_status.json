@@ -1,8 +1,8 @@
 {
   "_meta": {
     "description": "Agents update this file. Keep it as an observation map for implementation progress.",
-    "last_updated": "2026-03-26T01:58:00Z",
-    "agent_current_task": "step2_funding_core.validation_resilience",
+    "last_updated": "2026-03-26T02:15:00Z",
+    "agent_current_task": "step2_funding_core.freshness_persistence",
     "agent_current_step": "completed"
   },
   "steps": {
@@ -26,7 +26,7 @@
     },
     "step2_funding_core": {
       "label": "Funding Tracker Core",
-      "overall": "red",
+      "overall": "green",
       "items": {
         "real_data_provider": {
           "status": "green",
@@ -37,8 +37,8 @@
           "note": "On model failure/missing key, server now falls back to deterministic HEAD/GET URL checks and preserves last known-good prerequisites."
         },
         "freshness_persistence": {
-          "status": "red",
-          "note": "No persisted cache of last verification run across sessions."
+          "status": "green",
+          "note": "App now stores versioned accelerator + last-refresh cache in localStorage and rehydrates on startup."
         }
       }
     },
