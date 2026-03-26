@@ -1,8 +1,8 @@
 {
   "_meta": {
     "description": "Agents update this file. Keep it as an observation map for implementation progress.",
-    "last_updated": "2026-03-26T01:05:00Z",
-    "agent_current_task": "step1_security.input_query_sanitization",
+    "last_updated": "2026-03-26T01:20:00Z",
+    "agent_current_task": "step1_security.http_security_headers",
     "agent_current_step": "completed"
   },
   "steps": {
@@ -19,8 +19,8 @@
           "note": "Added client/server input policies with length + character constraints, URL normalization, and clear 400 malformed-input errors."
         },
         "http_security_headers": {
-          "status": "red",
-          "note": "No API server configured with standard security headers and CORS restrictions."
+          "status": "green",
+          "note": "Added helmet defaults, strict CORS allowlist via env, and rate limiting on /api/validate."
         }
       }
     },
