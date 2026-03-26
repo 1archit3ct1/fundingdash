@@ -56,3 +56,20 @@ View your app in AI Studio: https://ai.studio/apps/a8efaf45-ed21-4402-9b2d-1c0a0
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Security
+
+Before contributing or deploying, review [SECURITY.md](SECURITY.md).
+
+Key rules:
+- Report vulnerabilities through private channels (not public issues with exploit details).
+- Keep secrets out of source control; server-only secrets must never be exposed to the client.
+- Frontend config should use non-secret `VITE_*` values only.
+- Keep dependencies updated and validate with `npm run lint` and `npm run build` before merge.
+
+## Open-Source Release Security Checklist
+
+- Confirm no credentials or tokens are committed.
+- Ensure `.env` files with real secrets are excluded.
+- Verify `SECURITY.md` remains current.
+- Run `npm audit`, `npm run lint`, and `npm run build` before release tagging.

@@ -7,11 +7,6 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Red
 
-### step3_release_readiness.repo_hardening_docs
-**What:** Add security policy for open-source release.
-**Files:** `SECURITY.md`, `README.md`
-**Impl:** Define disclosure process, supported versions, secret-handling and dependency update rules.
-
 ### step3_release_readiness.ci_quality_gate
 **What:** Add CI checks for pull requests.
 **Files:** `.github/workflows/ci.yml`, `package.json`
@@ -35,6 +30,9 @@ Find your task, read only the files listed, implement, update status, commit.
 ---
 
 ## Completed
+
+### step3_release_readiness.repo_hardening_docs
+Added `SECURITY.md` and README security guidance covering disclosure process, supported versions, secret handling, and dependency update policy.
 
 ### step2_funding_core.freshness_persistence
 Added versioned localStorage cache for accelerators + last refresh timestamp, then rehydrated state on startup before refresh.
