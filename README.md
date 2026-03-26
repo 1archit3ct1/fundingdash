@@ -97,3 +97,25 @@ Use this path when applying Azure free credits and keeping monthly cost minimal.
 - Set budget alerts and spending caps in Cost Management on day one.
 - Keep a rollback path to local or alternate hosting if credits expire.
 - Avoid high-frequency polling jobs that can burn free credits quickly.
+
+## Environment Variable Contract
+
+Use this contract to keep secrets server-side and frontend configuration explicit.
+
+### Frontend-Safe Variables (browser-visible)
+
+- `VITE_API_BASE_URL` (required): API base URL used by the frontend.
+
+### Backend Secret / Runtime Variables
+
+- `GEMINI_API_KEY` (required in production): Gemini key for server-side validation only.
+- `SERVER_PORT` (optional): API listen port, default `8787`.
+- `VALIDATION_RATE_LIMIT_MAX` (optional): per-IP limit for `/api/validate` per 15 minutes.
+- `CORS_ALLOWLIST` (optional): comma-separated allowed origins for API requests.
+- `APP_URL` (optional): canonical app URL for callbacks/self-referential links.
+
+### Rules
+
+- Never expose backend secrets to browser bundles.
+- Only variables prefixed with `VITE_` may be referenced by frontend code.
+- Keep production values in hosting platform settings, not in committed `.env` files.

@@ -7,14 +7,14 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Red
 
-### step4_azure_option.env_contract
-**What:** Define environment variable contract.
-**Files:** `.env.example`, `README.md`
-**Impl:** Separate frontend-safe vars from backend-secret vars with required/optional notes.
+_(none)_
 
 ---
 
 ## Completed
+
+### step4_azure_option.env_contract
+Defined frontend-safe vs backend-secret environment contract with required/optional notes in `.env.example` and `README.md`.
 
 ### step4_azure_option.azure_free_credit_path
 Documented Azure Static Web Apps + minimal API hosting path, including free-credit constraints and cost-control guardrails.
