@@ -1,11 +1,16 @@
 import 'dotenv/config';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import express, { Request, Response } from 'express';
 import cors, { CorsOptions } from 'cors';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import { GoogleGenAI } from '@google/genai';
+import { fileURLToPath } from 'node:url';
 
 const app = express();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const fundingProgramsPath = path.resolve(__dirname, '..', 'datasets', 'funding_programs.json');
 
 const defaultCorsOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173', 'http://127.0.0.1:5173'];
 const corsAllowlist = (process.env.CORS_ALLOWLIST || '')
@@ -82,6 +87,34 @@ function normalizeAndValidateUrl(value: string): string | null {
     return null;
   }
 }
+
+async function loadFundingPrograms(): Promise<Array<{ name: string; url: string; prerequisites: string; category: string }>> {
+  const fileText = await readFile(fundingProgramsPath, 'utf-8');
+  const parsed = JSON.parse(fileText) as {
+    programs?: Array<{ name?: string; url?: string; prerequisites?: string; category?: string }>;
+  };
+
+  const programs = Array.isArray(parsed.programs) ? parsed.programs : [];
+
+  return programs
+    .filter((item) => typeof item.name === 'string' && typeof item.url === 'string' && typeof item.prerequisites === 'string' && typeof item.category === 'string')
+    .map((item) => ({
+      name: item.name as string,
+      url: item.url as string,
+      prerequisites: item.prerequisites as string,
+      category: item.category as string,
+    }));
+}
+
+app.get('/api/funding-programs', async (_req: Request, res: Response) => {
+  try {
+    const programs = await loadFundingPrograms();
+    return res.json({ programs });
+  } catch (error) {
+    console.error('[server] Failed to load funding programs:', error);
+    return res.status(500).json({ error: 'Unable to load funding programs dataset.' });
+  }
+});
 
 app.post('/api/validate', validateRateLimit, async (req: Request, res: Response) => {
   const { name, url, prerequisites } = req.body ?? {};

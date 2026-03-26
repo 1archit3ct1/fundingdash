@@ -7,11 +7,6 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Red
 
-### step2_funding_core.real_data_provider
-**What:** Add a structured data source for funding programs.
-**Files:** `server/index.ts`, `datasets/funding_programs.json`, `src/App.tsx`
-**Impl:** Serve normalized data from API and render from endpoint instead of hardcoded list.
-
 ### step2_funding_core.validation_resilience
 **What:** Add deterministic fallback validation when model validation fails.
 **Files:** `server/index.ts`, `src/App.tsx`
@@ -50,6 +45,9 @@ Find your task, read only the files listed, implement, update status, commit.
 ---
 
 ## Completed
+
+### step2_funding_core.real_data_provider
+Added `datasets/funding_programs.json`, served it via `/api/funding-programs`, and switched frontend rendering to API-provided programs.
 
 ### step1_security.http_security_headers
 Enabled Helmet hardening, env-driven strict CORS allowlist, and validation route rate limiting in `server/index.ts` with required dependencies.

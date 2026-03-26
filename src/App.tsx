@@ -42,23 +42,29 @@ interface Accelerator {
   lastChecked?: string;
 }
 
-const INITIAL_ACCELERATORS: Accelerator[] = [
-  { name: 'Y Combinator', url: 'https://www.ycombinator.com/apply', prerequisites: 'Early-stage startup, technical co-founder preferred, scalable idea.', category: 'Global', status: 'unknown' },
-  { name: 'Techstars', url: 'https://www.techstars.com/accelerators', prerequisites: 'Strong team, product-market fit potential, scalable technology.', category: 'Global', status: 'unknown' },
-  { name: '500 Global', url: 'https://500.co/accelerators', prerequisites: 'Post-revenue or strong traction, diverse teams, global focus.', category: 'Global', status: 'unknown' },
-  { name: 'Antler', url: 'https://www.antler.co/apply', prerequisites: 'Individual founders or teams, pre-idea or early stage.', category: 'Global', status: 'unknown' },
-  { name: 'Entrepreneur First', url: 'https://www.joinef.com/', prerequisites: 'Talented individuals, pre-team, pre-idea, technical background.', category: 'Global', status: 'unknown' },
-  { name: 'Alchemist Accelerator', url: 'https://www.alchemistaccelerator.com/apply', prerequisites: 'Enterprise-focused (B2B), technical founders.', category: 'Niche', status: 'unknown' },
-  { name: 'Plug and Play', url: 'https://www.plugandplaytechcenter.com/startups/', prerequisites: 'Industry-specific focus, later stage often preferred.', category: 'Corporate', status: 'unknown' },
-  { name: 'MassChallenge', url: 'https://masschallenge.org/programs', prerequisites: 'Early-stage, high-impact, zero-equity model.', category: 'Global', status: 'unknown' },
-  { name: 'Village Global', url: 'https://www.villageglobal.vc/accelerator', prerequisites: 'Early-stage, network-driven, diverse sectors.', category: 'Global', status: 'unknown' },
-  { name: 'Startupbootcamp', url: 'https://www.startupbootcamp.org/', prerequisites: 'Industry-focused programs, global presence.', category: 'Global', status: 'unknown' },
-  { name: 'Seedcamp', url: 'https://seedcamp.com/apply/', prerequisites: 'European focus, pre-seed/seed stage, high growth potential.', category: 'Regional', status: 'unknown' },
-  { name: 'Founders Factory', url: 'https://foundersfactory.com/', prerequisites: 'Corporate-backed, sector-specific, early stage.', category: 'Corporate', status: 'unknown' },
-];
+interface FundingProgramRecord {
+  name?: string;
+  url?: string;
+  prerequisites?: string;
+  category?: string;
+}
+
+function normalizeProgram(record: FundingProgramRecord): Accelerator | null {
+  if (!record.name || !record.url || !record.prerequisites || !record.category) {
+    return null;
+  }
+
+  return {
+    name: record.name,
+    url: record.url,
+    prerequisites: record.prerequisites,
+    category: record.category,
+    status: 'unknown',
+  };
+}
 
 export default function App() {
-  const [accelerators, setAccelerators] = useState<Accelerator[]>(INITIAL_ACCELERATORS);
+  const [accelerators, setAccelerators] = useState<Accelerator[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState(300); // 5 minutes refresh cycle
@@ -68,6 +74,21 @@ export default function App() {
     acc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     acc.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const fetchFundingPrograms = useCallback(async (): Promise<Accelerator[]> => {
+    const response = await fetch(`${API_BASE_URL}/api/funding-programs`);
+
+    if (!response.ok) {
+      throw new Error(`Funding program API error: ${response.status}`);
+    }
+
+    const payload = await response.json() as { programs?: FundingProgramRecord[] };
+    const programs = Array.isArray(payload.programs) ? payload.programs : [];
+
+    return programs
+      .map((program) => normalizeProgram(program))
+      .filter((program): program is Accelerator => program !== null);
+  }, []);
 
   const validateLink = useCallback(async (acc: Accelerator) => {
     try {
@@ -118,6 +139,10 @@ export default function App() {
   }, []);
 
   const refreshAll = useCallback(async () => {
+    if (accelerators.length === 0) {
+      return;
+    }
+
     setIsRefreshing(true);
     const updated = await Promise.all(
       accelerators.map(async (acc) => {
@@ -146,8 +171,25 @@ export default function App() {
 
   // Initial validation
   useEffect(() => {
+    const loadPrograms = async () => {
+      try {
+        const programs = await fetchFundingPrograms();
+        setAccelerators(programs);
+      } catch (error) {
+        console.error('Failed to load funding programs:', error);
+      }
+    };
+
+    loadPrograms();
+  }, [fetchFundingPrograms]);
+
+  useEffect(() => {
+    if (accelerators.length === 0) {
+      return;
+    }
+
     refreshAll();
-  }, []);
+  }, [accelerators.length]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans selection:bg-orange-500/30">

@@ -1,0 +1,76 @@
+{
+  "programs": [
+    {
+      "name": "Y Combinator",
+      "url": "https://www.ycombinator.com/apply",
+      "prerequisites": "Early-stage startup, technical co-founder preferred, scalable idea.",
+      "category": "Global"
+    },
+    {
+      "name": "Techstars",
+      "url": "https://www.techstars.com/accelerators",
+      "prerequisites": "Strong team, product-market fit potential, scalable technology.",
+      "category": "Global"
+    },
+    {
+      "name": "500 Global",
+      "url": "https://500.co/accelerators",
+      "prerequisites": "Post-revenue or strong traction, diverse teams, global focus.",
+      "category": "Global"
+    },
+    {
+      "name": "Antler",
+      "url": "https://www.antler.co/apply",
+      "prerequisites": "Individual founders or teams, pre-idea or early stage.",
+      "category": "Global"
+    },
+    {
+      "name": "Entrepreneur First",
+      "url": "https://www.joinef.com/",
+      "prerequisites": "Talented individuals, pre-team, pre-idea, technical background.",
+      "category": "Global"
+    },
+    {
+      "name": "Alchemist Accelerator",
+      "url": "https://www.alchemistaccelerator.com/apply",
+      "prerequisites": "Enterprise-focused (B2B), technical founders.",
+      "category": "Niche"
+    },
+    {
+      "name": "Plug and Play",
+      "url": "https://www.plugandplaytechcenter.com/startups/",
+      "prerequisites": "Industry-specific focus, later stage often preferred.",
+      "category": "Corporate"
+    },
+    {
+      "name": "MassChallenge",
+      "url": "https://masschallenge.org/programs",
+      "prerequisites": "Early-stage, high-impact, zero-equity model.",
+      "category": "Global"
+    },
+    {
+      "name": "Village Global",
+      "url": "https://www.villageglobal.vc/accelerator",
+      "prerequisites": "Early-stage, network-driven, diverse sectors.",
+      "category": "Global"
+    },
+    {
+      "name": "Startupbootcamp",
+      "url": "https://www.startupbootcamp.org/",
+      "prerequisites": "Industry-focused programs, global presence.",
+      "category": "Global"
+    },
+    {
+      "name": "Seedcamp",
+      "url": "https://seedcamp.com/apply/",
+      "prerequisites": "European focus, pre-seed/seed stage, high growth potential.",
+      "category": "Regional"
+    },
+    {
+      "name": "Founders Factory",
+      "url": "https://foundersfactory.com/",
+      "prerequisites": "Corporate-backed, sector-specific, early stage.",
+      "category": "Corporate"
+    }
+  ]
+}
