@@ -1,8 +1,8 @@
 {
   "_meta": {
     "description": "Agents update this file. Keep it as an observation map for implementation progress.",
-    "last_updated": "2026-03-26T03:23:00Z",
-    "agent_current_task": "step4_azure_option.azure_free_credit_path",
+    "last_updated": "2026-03-26T03:40:00Z",
+    "agent_current_task": "step4_azure_option.env_contract",
     "agent_current_step": "completed"
   },
   "steps": {
@@ -44,7 +44,7 @@
     },
     "step3_release_readiness": {
       "label": "Release Readiness",
-      "overall": "red",
+      "overall": "green",
       "items": {
         "repo_hardening_docs": {
           "status": "green",
@@ -62,15 +62,15 @@
     },
     "step4_azure_option": {
       "label": "Azure Option",
-      "overall": "red",
+      "overall": "green",
       "items": {
         "azure_free_credit_path": {
           "status": "green",
           "note": "Documented Azure Static Web Apps + minimal API hosting path with free-credit constraints and budget controls."
         },
         "env_contract": {
-          "status": "red",
-          "note": "No explicit production env contract for frontend and backend split."
+          "status": "green",
+          "note": "Defined explicit frontend-safe vs backend-secret env contract in .env.example and README with required/optional guidance."
         }
       }
     }
