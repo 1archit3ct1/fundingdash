@@ -22,6 +22,7 @@ const SEARCH_TERM_MAX_LENGTH = 80;
 const SEARCH_DISALLOWED_CHARS = /[^a-zA-Z0-9\s\-'&]/g;
 const ACCELERATOR_CACHE_KEY = 'fundingdash:accelerator-cache';
 const ACCELERATOR_CACHE_VERSION = 1;
+const TARGET_RETURN_MULTIPLE = 100;
 
 function sanitizeSearchInput(value: string): string {
   return value.replace(SEARCH_DISALLOWED_CHARS, '').slice(0, SEARCH_TERM_MAX_LENGTH);
@@ -134,6 +135,9 @@ export default function App() {
     acc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     acc.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const liveAcceleratorCount = accelerators.filter((acc) => acc.status === 'valid').length;
+  const brokenAcceleratorCount = accelerators.filter((acc) => acc.status === 'broken').length;
+  const validationEngineLabel = 'Gemini API + deterministic fallback';
 
   const fetchFundingPrograms = useCallback(async (): Promise<Accelerator[]> => {
     const response = await fetch(`${API_BASE_URL}/api/funding-programs`);
@@ -314,62 +318,85 @@ export default function App() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full" />
       </div>
 
-      <main className="relative z-10 max-w-7xl mx-auto px-6 py-12">
+      <main className="relative z-10 max-w-[88rem] mx-auto px-5 py-10 lg:px-6">
         {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-          <div>
-            <div className="flex items-center gap-2 text-orange-500 mb-4">
+        <header className="flex flex-col gap-6 mb-10">
+          <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6">
+            <div className="max-w-3xl">
+              <div className="flex items-center gap-2 text-orange-500 mb-3">
               <Zap size={20} fill="currentColor" />
               <span className="text-xs font-bold tracking-[0.2em] uppercase">Live Accelerator Pulse</span>
-            </div>
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none mb-4">
-              THE <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/40">DASHBOARD</span>
-            </h1>
-            <p className="text-zinc-400 max-w-md text-lg leading-relaxed">
-              Real-time tracking of YC and top global accelerators. 
-              Verified links and prerequisites as of <span className="text-white font-medium">March 26, 2026</span>.
-            </p>
+              </div>
+              <h1 className="text-4xl md:text-6xl xl:text-7xl font-black tracking-[-0.06em] leading-[0.92] mb-3">
+                FundingDash
+              </h1>
+              <p className="text-zinc-300 max-w-2xl text-base md:text-lg leading-relaxed">
+                High-upside accelerator intelligence for venture-scale operators. Track live application links,
+                preserve prerequisite context, and screen programs against a <span className="text-white font-semibold">{TARGET_RETURN_MULTIPLE}x+</span> return profile.
+              </p>
 
-            <div className="mt-8 relative max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
-              <input 
-                type="text" 
-                placeholder="Search accelerators..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(sanitizeSearchInput(e.target.value))}
-                className="w-full bg-zinc-900/50 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:border-orange-500/50 transition-all"
-              />
+              <div className="mt-5 relative max-w-2xl">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Search accelerators, categories, or venture profile..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(sanitizeSearchInput(e.target.value))}
+                  className="w-full bg-zinc-900/60 border border-white/10 rounded-2xl py-3.5 pl-12 pr-6 text-sm md:text-[15px] focus:outline-none focus:border-orange-500/50 transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col items-stretch xl:items-end gap-3 xl:min-w-[24rem]">
+              <div className="flex items-center justify-between gap-6 bg-zinc-900/50 backdrop-blur-xl border border-white/10 p-5 rounded-2xl">
+                <div>
+                  <div className="text-zinc-500 text-[10px] uppercase tracking-widest mb-1">Next Auto-Refresh</div>
+                  <div className="text-xl font-mono font-bold flex items-center gap-2">
+                    <Clock size={17} className="text-orange-500" />
+                    {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}
+                  </div>
+                </div>
+                <button 
+                  onClick={refreshAll}
+                  disabled={isRefreshing}
+                  className="group relative flex items-center gap-2 bg-white text-black px-5 py-3 rounded-xl font-bold hover:bg-orange-500 hover:text-white transition-all active:scale-95 disabled:opacity-50"
+                >
+                  <RefreshCw size={18} className={`${isRefreshing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+                  {isRefreshing ? 'VALIDATING...' : 'REFRESH NOW'}
+                </button>
+              </div>
+              <div className="text-[10px] text-zinc-500 uppercase tracking-widest xl:text-right">
+                Last Pulse: {lastRefresh.toLocaleTimeString()}
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-col items-end gap-4">
-            <div className="flex items-center gap-8 bg-zinc-900/50 backdrop-blur-xl border border-white/10 p-6 rounded-2xl">
-              <div className="text-right">
-                <div className="text-zinc-500 text-[10px] uppercase tracking-widest mb-1">Next Auto-Refresh</div>
-                <div className="text-2xl font-mono font-bold flex items-center gap-2">
-                  <Clock size={18} className="text-orange-500" />
-                  {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}
-                </div>
-              </div>
-              <div className="w-px h-10 bg-white/10" />
-              <button 
-                onClick={refreshAll}
-                disabled={isRefreshing}
-                className="group relative flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-orange-500 hover:text-white transition-all active:scale-95 disabled:opacity-50"
-              >
-                <RefreshCw size={18} className={`${isRefreshing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
-                {isRefreshing ? 'VALIDATING...' : 'REFRESH NOW'}
-              </button>
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+            <div className="rounded-2xl border border-orange-500/25 bg-orange-500/10 px-4 py-3">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-orange-300 mb-1">Target Return</div>
+              <div className="text-2xl md:text-3xl font-black tracking-tight">{TARGET_RETURN_MULTIPLE}x+</div>
+              <p className="text-xs text-orange-100/75 mt-1">Venture-scale upside target for screened opportunities.</p>
             </div>
-            <div className="text-[10px] text-zinc-500 uppercase tracking-widest">
-              Last Pulse: {lastRefresh.toLocaleTimeString()}
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/45 px-4 py-3">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Live Links</div>
+              <div className="text-2xl md:text-3xl font-black tracking-tight">{liveAcceleratorCount}</div>
+              <p className="text-xs text-zinc-400 mt-1">Programs currently validating as reachable.</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/45 px-4 py-3">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Broken Flags</div>
+              <div className="text-2xl md:text-3xl font-black tracking-tight">{brokenAcceleratorCount}</div>
+              <p className="text-xs text-zinc-400 mt-1">Programs needing manual recheck or routing updates.</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/45 px-4 py-3">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Validation Engine</div>
+              <div className="text-sm md:text-base font-semibold leading-snug">{validationEngineLabel}</div>
+              <p className="text-xs text-zinc-400 mt-1">Server-side model validation with safe fallback if the model path fails.</p>
             </div>
           </div>
         </header>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           <AnimatePresence mode="popLayout">
             {filteredAccelerators.map((acc, index) => (
               <motion.div
@@ -378,24 +405,24 @@ export default function App() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="group relative bg-zinc-900/40 backdrop-blur-sm border border-white/5 p-8 rounded-3xl hover:border-white/20 transition-all"
+                className="group relative bg-zinc-900/40 backdrop-blur-sm border border-white/5 p-5 rounded-[1.5rem] hover:border-white/20 transition-all"
               >
                 {/* Status Indicator */}
-                <div className="absolute top-8 right-8">
+                <div className="absolute top-5 right-5">
                   {acc.status === 'validating' ? (
-                    <RefreshCw size={20} className="text-blue-400 animate-spin" />
+                    <RefreshCw size={18} className="text-blue-400 animate-spin" />
                   ) : acc.status === 'valid' ? (
-                    <CheckCircle2 size={20} className="text-emerald-400" />
+                    <CheckCircle2 size={18} className="text-emerald-400" />
                   ) : acc.status === 'broken' ? (
-                    <AlertCircle size={20} className="text-red-400" />
+                    <AlertCircle size={18} className="text-red-400" />
                   ) : (
-                    <Clock size={20} className="text-zinc-600" />
+                    <Clock size={18} className="text-zinc-600" />
                   )}
                 </div>
 
-                <div className="mb-8">
-                  <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-2">{acc.category}</div>
-                  <h3 className="text-3xl font-bold tracking-tight mb-4">{acc.name}</h3>
+                <div className="mb-5 pr-8">
+                  <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.18em] mb-2">{acc.category}</div>
+                  <h3 className="text-2xl font-bold tracking-tight mb-3 leading-tight">{acc.name}</h3>
                   <a 
                     href={acc.url} 
                     target="_blank" 
@@ -408,13 +435,13 @@ export default function App() {
                   </a>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div className="p-4 bg-white/5 rounded-2xl border border-white/5 group-hover:border-orange-500/30 transition-colors">
                     <div className="flex items-center gap-2 text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">
-                      <Search size={12} />
+                      <Info size={12} />
                       Application Info
                     </div>
-                    <div className="space-y-3">
+                    <div className="grid gap-3">
                       <div>
                         <div className="text-[9px] text-zinc-500 uppercase mb-1">Direct Link</div>
                         <a 
@@ -428,7 +455,7 @@ export default function App() {
                       </div>
                       <div>
                         <div className="text-[9px] text-zinc-500 uppercase mb-1">Prerequisites</div>
-                        <p className="text-sm text-zinc-300 leading-relaxed font-mono">
+                        <p className="text-[13px] text-zinc-300 leading-6 font-mono">
                           {acc.prerequisites}
                         </p>
                       </div>
@@ -436,7 +463,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-600 uppercase tracking-widest">
+                <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between text-[10px] text-zinc-600 uppercase tracking-widest">
                   <span>Checked: {acc.lastChecked || 'Never'}</span>
                   <span className={`font-bold ${
                     acc.status === 'valid' ? 'text-emerald-500' : 
