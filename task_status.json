@@ -1,8 +1,8 @@
 {
   "_meta": {
     "description": "Agents update this file. Keep it as an observation map for implementation progress.",
-    "last_updated": "2026-03-26T02:15:00Z",
-    "agent_current_task": "step2_funding_core.freshness_persistence",
+    "last_updated": "2026-03-26T02:32:00Z",
+    "agent_current_task": "step3_release_readiness.repo_hardening_docs",
     "agent_current_step": "completed"
   },
   "steps": {
@@ -47,8 +47,8 @@
       "overall": "red",
       "items": {
         "repo_hardening_docs": {
-          "status": "red",
-          "note": "No SECURITY.md and contribution security policy in repo root."
+          "status": "green",
+          "note": "Added SECURITY.md policy and README security checklist for disclosure, secret handling, and dependency updates."
         },
         "ci_quality_gate": {
           "status": "red",
