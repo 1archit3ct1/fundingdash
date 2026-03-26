@@ -20,6 +20,8 @@ import { motion, AnimatePresence } from 'motion/react';
 const API_BASE_URL = (import.meta as { env?: { VITE_API_BASE_URL?: string } }).env?.VITE_API_BASE_URL || 'http://localhost:8787';
 const SEARCH_TERM_MAX_LENGTH = 80;
 const SEARCH_DISALLOWED_CHARS = /[^a-zA-Z0-9\s\-'&]/g;
+const ACCELERATOR_CACHE_KEY = 'fundingdash:accelerator-cache';
+const ACCELERATOR_CACHE_VERSION = 1;
 
 function sanitizeSearchInput(value: string): string {
   return value.replace(SEARCH_DISALLOWED_CHARS, '').slice(0, SEARCH_TERM_MAX_LENGTH);
@@ -42,6 +44,12 @@ interface Accelerator {
   lastChecked?: string;
 }
 
+interface AcceleratorCachePayload {
+  version: number;
+  accelerators: Accelerator[];
+  lastRefreshIso: string;
+}
+
 interface FundingProgramRecord {
   name?: string;
   url?: string;
@@ -61,6 +69,58 @@ function normalizeProgram(record: FundingProgramRecord): Accelerator | null {
     category: record.category,
     status: 'unknown',
   };
+}
+
+function isValidAccelerator(value: unknown): value is Accelerator {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const candidate = value as Partial<Accelerator>;
+  const validStatus = candidate.status === 'validating' || candidate.status === 'valid' || candidate.status === 'broken' || candidate.status === 'unknown';
+
+  return (
+    typeof candidate.name === 'string' &&
+    typeof candidate.url === 'string' &&
+    typeof candidate.prerequisites === 'string' &&
+    typeof candidate.category === 'string' &&
+    validStatus
+  );
+}
+
+function readAcceleratorCache(): AcceleratorCachePayload | null {
+  try {
+    const raw = localStorage.getItem(ACCELERATOR_CACHE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    const parsed = JSON.parse(raw) as Partial<AcceleratorCachePayload>;
+    if (parsed.version !== ACCELERATOR_CACHE_VERSION || !Array.isArray(parsed.accelerators) || typeof parsed.lastRefreshIso !== 'string') {
+      return null;
+    }
+
+    const accelerators = parsed.accelerators.filter((item): item is Accelerator => isValidAccelerator(item));
+    if (accelerators.length === 0) {
+      return null;
+    }
+
+    return {
+      version: ACCELERATOR_CACHE_VERSION,
+      accelerators,
+      lastRefreshIso: parsed.lastRefreshIso,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeAcceleratorCache(payload: AcceleratorCachePayload): void {
+  try {
+    localStorage.setItem(ACCELERATOR_CACHE_KEY, JSON.stringify(payload));
+  } catch (error) {
+    console.error('Failed to persist accelerator cache:', error);
+  }
 }
 
 export default function App() {
@@ -88,6 +148,25 @@ export default function App() {
     return programs
       .map((program) => normalizeProgram(program))
       .filter((program): program is Accelerator => program !== null);
+  }, []);
+
+  const mergeProgramsWithCache = useCallback((programs: Accelerator[], cached: Accelerator[]): Accelerator[] => {
+    const cachedByName = new Map(cached.map((item) => [item.name, item]));
+
+    return programs.map((program) => {
+      const cachedMatch = cachedByName.get(program.name);
+      if (!cachedMatch) {
+        return program;
+      }
+
+      return {
+        ...program,
+        url: cachedMatch.url,
+        prerequisites: cachedMatch.prerequisites,
+        status: cachedMatch.status,
+        lastChecked: cachedMatch.lastChecked,
+      };
+    });
   }, []);
 
   const validateLink = useCallback(async (acc: Accelerator) => {
@@ -180,9 +259,24 @@ export default function App() {
 
   // Initial validation
   useEffect(() => {
+    const cached = readAcceleratorCache();
+    if (cached) {
+      setAccelerators(cached.accelerators);
+      const parsedDate = new Date(cached.lastRefreshIso);
+      if (!Number.isNaN(parsedDate.getTime())) {
+        setLastRefresh(parsedDate);
+        const elapsed = Math.floor((Date.now() - parsedDate.getTime()) / 1000);
+        setCountdown(elapsed >= 300 ? 1 : Math.max(1, 300 - elapsed));
+      }
+    }
+
     const loadPrograms = async () => {
       try {
         const programs = await fetchFundingPrograms();
+        if (cached) {
+          setAccelerators(mergeProgramsWithCache(programs, cached.accelerators));
+          return;
+        }
         setAccelerators(programs);
       } catch (error) {
         console.error('Failed to load funding programs:', error);
@@ -190,7 +284,19 @@ export default function App() {
     };
 
     loadPrograms();
-  }, [fetchFundingPrograms]);
+  }, [fetchFundingPrograms, mergeProgramsWithCache]);
+
+  useEffect(() => {
+    if (accelerators.length === 0) {
+      return;
+    }
+
+    writeAcceleratorCache({
+      version: ACCELERATOR_CACHE_VERSION,
+      accelerators,
+      lastRefreshIso: lastRefresh.toISOString(),
+    });
+  }, [accelerators, lastRefresh]);
 
   useEffect(() => {
     if (accelerators.length === 0) {

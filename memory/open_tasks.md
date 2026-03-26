@@ -7,11 +7,6 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Red
 
-### step2_funding_core.freshness_persistence
-**What:** Persist last refresh state.
-**Files:** `src/App.tsx`
-**Impl:** Save and load last-known accelerators + timestamp in localStorage with schema version.
-
 ### step3_release_readiness.repo_hardening_docs
 **What:** Add security policy for open-source release.
 **Files:** `SECURITY.md`, `README.md`
@@ -40,6 +35,9 @@ Find your task, read only the files listed, implement, update status, commit.
 ---
 
 ## Completed
+
+### step2_funding_core.freshness_persistence
+Added versioned localStorage cache for accelerators + last refresh timestamp, then rehydrated state on startup before refresh.
 
 ### step2_funding_core.validation_resilience
 Added deterministic server fallback (HTTP HEAD then GET) when model validation fails or key is missing, while preserving last known-good prerequisites.
