@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-const API_BASE_URL = (import.meta as { env?: { VITE_API_BASE_URL?: string } }).env?.VITE_API_BASE_URL || 'http://localhost:8787';
+const API_BASE_URL = (import.meta as { env?: { VITE_API_BASE_URL?: string } }).env?.VITE_API_BASE_URL || '';
 const SEARCH_TERM_MAX_LENGTH = 80;
 const SEARCH_DISALLOWED_CHARS = /[^a-zA-Z0-9\s\-'&]/g;
 const ACCELERATOR_CACHE_KEY = 'fundingdash:accelerator-cache';
@@ -456,7 +456,7 @@ export default function App() {
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center font-black italic">YC</div>
             <div className="text-xs text-zinc-500 max-w-[200px]">
-              Data validated using Gemini 3.1 Flash with Google Search Grounding.
+              Data validated through server-side checks with deterministic fallback handling.
             </div>
           </div>
           <div className="flex gap-8 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">

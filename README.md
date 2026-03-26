@@ -40,11 +40,11 @@ Output format required:
 Stop after one completed loop cycle.
 ```
 
-# Run and deploy your AI Studio app
+# Run and deploy FundingDash
 
 This contains everything you need to run your app locally.
 
-View your app in AI Studio: https://ai.studio/apps/a8efaf45-ed21-4402-9b2d-1c0a056356af
+Live demo: https://fundingdash.vercel.app
 
 ## Run Locally
 
