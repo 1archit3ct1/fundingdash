@@ -1,9 +1,53 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
+import cors, { CorsOptions } from 'cors';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 import { GoogleGenAI } from '@google/genai';
 
 const app = express();
 
+const defaultCorsOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173', 'http://127.0.0.1:5173'];
+const corsAllowlist = (process.env.CORS_ALLOWLIST || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const allowedOrigins = new Set(corsAllowlist.length > 0 ? corsAllowlist : defaultCorsOrigins);
+
+const corsOptions: CorsOptions = {
+  origin(origin, callback) {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    if (allowedOrigins.has(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('CORS policy blocked this origin.'));
+  },
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+};
+
+const validateRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: Number(process.env.VALIDATION_RATE_LIMIT_MAX || 60),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many validation requests. Please retry later.' },
+});
+
+app.disable('x-powered-by');
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }),
+);
+app.use('/api', cors(corsOptions));
 app.use(express.json({ limit: '32kb' }));
 
 const port = Number(process.env.SERVER_PORT || 8787);
@@ -39,7 +83,7 @@ function normalizeAndValidateUrl(value: string): string | null {
   }
 }
 
-app.post('/api/validate', async (req: Request, res: Response) => {
+app.post('/api/validate', validateRateLimit, async (req: Request, res: Response) => {
   const { name, url, prerequisites } = req.body ?? {};
 
   if (typeof name !== 'string' || typeof url !== 'string' || typeof prerequisites !== 'string') {

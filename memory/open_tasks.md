@@ -7,11 +7,6 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Red
 
-### step1_security.http_security_headers
-**What:** Add API-layer security defaults.
-**Files:** `package.json`, `server/index.ts`
-**Impl:** Add helmet, strict CORS allowlist via env, basic rate limiting for validation route.
-
 ### step2_funding_core.real_data_provider
 **What:** Add a structured data source for funding programs.
 **Files:** `server/index.ts`, `datasets/funding_programs.json`, `src/App.tsx`
@@ -55,6 +50,9 @@ Find your task, read only the files listed, implement, update status, commit.
 ---
 
 ## Completed
+
+### step1_security.http_security_headers
+Enabled Helmet hardening, env-driven strict CORS allowlist, and validation route rate limiting in `server/index.ts` with required dependencies.
 
 ### step1_security.input_query_sanitization
 Added client/server sanitization guardrails with length + character policies, URL normalization, and explicit malformed-input responses.
