@@ -7,11 +7,6 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Red
 
-### step3_release_readiness.ci_quality_gate
-**What:** Add CI checks for pull requests.
-**Files:** `.github/workflows/ci.yml`, `package.json`
-**Impl:** Run npm ci, npm run lint, npm run build on push and pull request.
-
 ### step3_release_readiness.cloudflare_link_slot
 **What:** Track public demo URL for company website update.
 **Files:** `metadata.json`, `README.md`
@@ -30,6 +25,9 @@ Find your task, read only the files listed, implement, update status, commit.
 ---
 
 ## Completed
+
+### step3_release_readiness.ci_quality_gate
+Added `.github/workflows/ci.yml` to run `npm ci`, `npm run lint`, and `npm run build` on push and pull request to `main`.
 
 ### step3_release_readiness.repo_hardening_docs
 Added `SECURITY.md` and README security guidance covering disclosure process, supported versions, secret handling, and dependency update policy.
