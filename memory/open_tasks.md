@@ -7,11 +7,6 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Red
 
-### step1_security.gemini_key_client_exposure
-**What:** Remove Gemini API key usage from browser code and route AI calls through backend.
-**Files:** `src/App.tsx`, `package.json`, `server/index.ts`, `.env.example`
-**Impl:** Create Express endpoint for validation, read key only on server, call endpoint from UI.
-
 ### step1_security.input_query_sanitization
 **What:** Add validation guardrails for user input and prompt construction.
 **Files:** `src/App.tsx`, `server/index.ts`
@@ -66,7 +61,8 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Completed
 
-_(agents move items here with a one-line summary when done)_
+### step1_security.gemini_key_client_exposure
+Moved Gemini validation from browser to `server/index.ts` and switched `src/App.tsx` to call `/api/validate`; documented server/client API env vars.
 
 ---
 

@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { GoogleGenAI } from "@google/genai";
 import { 
   ExternalLink, 
   RefreshCw, 
@@ -18,8 +17,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-// Initialize Gemini
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const API_BASE_URL = (import.meta as { env?: { VITE_API_BASE_URL?: string } }).env?.VITE_API_BASE_URL || 'http://localhost:8787';
 
 interface Accelerator {
   name: string;
@@ -59,19 +57,27 @@ export default function App() {
 
   const validateLink = useCallback(async (acc: Accelerator) => {
     try {
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: `Verify if the application link for ${acc.name} is still live and accurate as of March 26, 2026. 
-        Current URL: ${acc.url}
-        Also, confirm the current prerequisites for applying.
-        Return the result in JSON format with fields: "isLive" (boolean), "confirmedUrl" (string), and "currentPrerequisites" (string).`,
-        config: {
-          tools: [{ googleSearch: {} }],
-          responseMimeType: "application/json"
+      const response = await fetch(`${API_BASE_URL}/api/validate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          name: acc.name,
+          url: acc.url,
+          prerequisites: acc.prerequisites,
+        }),
       });
 
-      const result = JSON.parse(response.text || '{}');
+      if (!response.ok) {
+        throw new Error(`Validation API error: ${response.status}`);
+      }
+
+      const result = await response.json() as {
+        isLive?: boolean;
+        confirmedUrl?: string;
+        currentPrerequisites?: string;
+      };
       
       return {
         ...acc,
