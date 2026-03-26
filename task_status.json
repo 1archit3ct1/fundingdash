@@ -1,9 +1,9 @@
 {
   "_meta": {
     "description": "Agents update this file. Keep it as an observation map for implementation progress.",
-    "last_updated": "2026-03-26T00:00:00Z",
-    "agent_current_task": null,
-    "agent_current_step": null
+    "last_updated": "2026-03-26T00:30:00Z",
+    "agent_current_task": "step1_security.gemini_key_client_exposure",
+    "agent_current_step": "completed"
   },
   "steps": {
     "step1_security": {
@@ -11,8 +11,8 @@
       "overall": "red",
       "items": {
         "gemini_key_client_exposure": {
-          "status": "red",
-          "note": "Client code initializes Gemini directly with process.env; move key usage server-side."
+          "status": "green",
+          "note": "Gemini calls moved to server /api/validate endpoint; browser now calls backend and no longer reads API key."
         },
         "input_query_sanitization": {
           "status": "red",

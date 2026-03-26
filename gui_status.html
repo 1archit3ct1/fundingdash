@@ -32,7 +32,7 @@
   <main>
     <header>
       <h1>FundingDash Agent Status</h1>
-      <div class='meta'>Updated: 2026-03-26 21:46:34 UTC<br/>Agent task: None | Agent step: None</div>
+      <div class='meta'>Updated: 2026-03-26 22:05:55 UTC<br/>Agent task: step1_security.gemini_key_client_exposure | Agent step: completed</div>
     </header>
     <div class='grid'>
       
@@ -43,7 +43,7 @@
               </div>
               <table>
                 <thead><tr><th>Item</th><th>Status</th><th>Note</th></tr></thead>
-                <tbody><tr><td>gemini_key_client_exposure</td><td><span class='pill red'>red</span></td><td>Client code initializes Gemini directly with process.env; move key usage server-side.</td></tr><tr><td>input_query_sanitization</td><td><span class='pill red'>red</span></td><td>No explicit sanitization/length guard for user query terms and generated prompts.</td></tr><tr><td>http_security_headers</td><td><span class='pill red'>red</span></td><td>No API server configured with standard security headers and CORS restrictions.</td></tr></tbody>
+                <tbody><tr><td>gemini_key_client_exposure</td><td><span class='pill green'>green</span></td><td>Gemini calls moved to server /api/validate endpoint; browser now calls backend and no longer reads API key.</td></tr><tr><td>input_query_sanitization</td><td><span class='pill red'>red</span></td><td>No explicit sanitization/length guard for user query terms and generated prompts.</td></tr><tr><td>http_security_headers</td><td><span class='pill red'>red</span></td><td>No API server configured with standard security headers and CORS restrictions.</td></tr></tbody>
               </table>
             </section>
             
