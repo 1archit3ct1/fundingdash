@@ -7,11 +7,6 @@ Find your task, read only the files listed, implement, update status, commit.
 
 ## Red
 
-### step3_release_readiness.cloudflare_link_slot
-**What:** Track public demo URL for company website update.
-**Files:** `metadata.json`, `README.md`
-**Impl:** Add `publicDemoUrl` field and release checklist entry for Cloudflare site update.
-
 ### step4_azure_option.azure_free_credit_path
 **What:** Document Azure free-credit deployment option.
 **Files:** `README.md`, `memory/providers.md`
@@ -25,6 +20,9 @@ Find your task, read only the files listed, implement, update status, commit.
 ---
 
 ## Completed
+
+### step3_release_readiness.cloudflare_link_slot
+Added `publicDemoUrl` slot to `metadata.json` and README deployment checklist steps for Cloudflare website demo-link update.
 
 ### step3_release_readiness.ci_quality_gate
 Added `.github/workflows/ci.yml` to run `npm ci`, `npm run lint`, and `npm run build` on push and pull request to `main`.

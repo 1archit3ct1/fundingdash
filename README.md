@@ -73,3 +73,9 @@ Key rules:
 - Ensure `.env` files with real secrets are excluded.
 - Verify `SECURITY.md` remains current.
 - Run `npm audit`, `npm run lint`, and `npm run build` before release tagging.
+
+## Deployment Link Checklist
+
+- Set `publicDemoUrl` in `metadata.json` to the live deployment URL.
+- Add or update the FundingDash demo link on the NEXTAURA Cloudflare website.
+- Verify the public URL serves correctly from desktop and mobile networks.

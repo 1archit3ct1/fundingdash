@@ -1,5 +1,6 @@
 {
   "name": "Accelerator Tracker",
   "description": "A dashboard for tracking YC and top startup accelerator programs with live link validation and application prerequisites.",
+  "publicDemoUrl": "",
   "requestFramePermissions": []
 }
