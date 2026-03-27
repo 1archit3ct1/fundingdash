@@ -146,22 +146,4 @@ curl -X POST "https://fundingdash.vercel.app/api/live-search" \
 3. Redeploy and verify `/api/health`, `/api/funding-programs`, and `/api/live-search`.
 4. Keep all secrets in Vercel env settings only; do not commit keys.
 
-## Supabase vs Oracle for Live Web Search
 
-Both can add value, but neither replaces Gemini search itself.
-
-- Supabase: best fit for quick wins.
-   - Store search logs and cached search responses to reduce repeated Gemini calls.
-   - Add user-level quotas and analytics using Postgres tables + Row Level Security.
-   - Good when you want minimal ops overhead on Vercel.
-
-- Oracle Cloud Always Free: best fit for heavier backend workloads.
-   - Host a long-running worker/cron for pre-warming search cache and scheduled discovery.
-   - Useful when you need larger free compute for background jobs than Vercel Hobby allows.
-   - Higher setup/ops complexity than Supabase.
-
-Recommended path:
-
-1. Keep Gemini web search in Vercel server routes as implemented.
-2. Add Supabase for cache + telemetry first.
-3. Use Oracle only if scheduled/background processing outgrows Vercel limits.
