@@ -58,6 +58,15 @@ interface FundingProgramRecord {
   category?: string;
 }
 
+interface FundingProgramsPayload {
+  programs?: FundingProgramRecord[];
+  meta?: {
+    discoverySource?: string;
+    discoveryRefreshedAt?: string | null;
+    refreshIntervalHours?: number;
+  };
+}
+
 function normalizeProgram(record: FundingProgramRecord): Accelerator | null {
   if (!record.name || !record.url || !record.prerequisites || !record.category) {
     return null;
@@ -130,14 +139,28 @@ export default function App() {
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState(300); // 5 minutes refresh cycle
   const [searchTerm, setSearchTerm] = useState('');
+  const [discoverySource, setDiscoverySource] = useState<'live-search' | 'dataset-only'>('dataset-only');
+  const [discoveryRefreshedAt, setDiscoveryRefreshedAt] = useState<string | null>(null);
 
   const filteredAccelerators = accelerators.filter(acc => 
     acc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     acc.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const trackedProgramCount = accelerators.length;
   const liveAcceleratorCount = accelerators.filter((acc) => acc.status === 'valid').length;
   const brokenAcceleratorCount = accelerators.filter((acc) => acc.status === 'broken').length;
-  const validationEngineLabel = 'Gemini API + deterministic fallback';
+  const validationEngineLabel =
+    discoverySource === 'live-search'
+      ? 'Gemini + Google Search + deterministic fallback'
+      : discoveryRefreshedAt
+        ? 'Curated dataset + Gemini validation'
+        : 'Curated dataset only';
+  const validationEngineNote =
+    discoverySource === 'live-search'
+      ? 'Live discovery refreshes on a 12-hour cadence, then validation runs server-side with safe fallback.'
+      : discoveryRefreshedAt
+        ? 'Discovery ran but returned no new additions in the current window; the curated baseline remains active.'
+        : 'Live discovery is coded, but this deployment is serving the curated baseline until a Gemini runtime key is available.';
 
   const fetchFundingPrograms = useCallback(async (): Promise<Accelerator[]> => {
     const response = await fetch(`${API_BASE_URL}/api/funding-programs`);
@@ -146,8 +169,11 @@ export default function App() {
       throw new Error(`Funding program API error: ${response.status}`);
     }
 
-    const payload = await response.json() as { programs?: FundingProgramRecord[] };
+    const payload = await response.json() as FundingProgramsPayload;
     const programs = Array.isArray(payload.programs) ? payload.programs : [];
+
+    setDiscoverySource(payload.meta?.discoverySource === 'live-search' ? 'live-search' : 'dataset-only');
+    setDiscoveryRefreshedAt(typeof payload.meta?.discoveryRefreshedAt === 'string' ? payload.meta.discoveryRefreshedAt : null);
 
     return programs
       .map((program) => normalizeProgram(program))
@@ -231,22 +257,26 @@ export default function App() {
   }, []);
 
   const refreshAll = useCallback(async () => {
-    if (accelerators.length === 0) {
-      return;
-    }
-
     setIsRefreshing(true);
-    const updated = await Promise.all(
-      accelerators.map(async (acc) => {
-        setAccelerators(prev => prev.map(p => p.name === acc.name ? { ...p, status: 'validating' } : p));
-        return await validateLink(acc);
-      })
-    );
-    setAccelerators(updated);
-    setIsRefreshing(false);
-    setLastRefresh(new Date());
-    setCountdown(300);
-  }, [accelerators, validateLink]);
+
+    try {
+      const latestPrograms = await fetchFundingPrograms();
+      const mergedPrograms = mergeProgramsWithCache(latestPrograms, accelerators);
+
+      if (mergedPrograms.length === 0) {
+        return;
+      }
+
+      setAccelerators(mergedPrograms.map((program) => ({ ...program, status: 'validating' })));
+
+      const updated = await Promise.all(mergedPrograms.map(async (acc) => validateLink(acc)));
+      setAccelerators(updated);
+      setLastRefresh(new Date());
+      setCountdown(300);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [accelerators, fetchFundingPrograms, mergeProgramsWithCache, validateLink]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -378,19 +408,19 @@ export default function App() {
               <p className="text-xs text-orange-100/75 mt-1">Venture-scale upside target for screened opportunities.</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-zinc-900/45 px-4 py-3">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Live Links</div>
-              <div className="text-2xl md:text-3xl font-black tracking-tight">{liveAcceleratorCount}</div>
-              <p className="text-xs text-zinc-400 mt-1">Programs currently validating as reachable.</p>
+              <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Programs Tracked</div>
+              <div className="text-2xl md:text-3xl font-black tracking-tight">{trackedProgramCount}</div>
+              <p className="text-xs text-zinc-400 mt-1">Curated baseline plus live search additions refreshed up to twice daily.</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-zinc-900/45 px-4 py-3">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Broken Flags</div>
-              <div className="text-2xl md:text-3xl font-black tracking-tight">{brokenAcceleratorCount}</div>
-              <p className="text-xs text-zinc-400 mt-1">Programs needing manual recheck or routing updates.</p>
+              <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Validated Live Links</div>
+              <div className="text-2xl md:text-3xl font-black tracking-tight">{liveAcceleratorCount}</div>
+              <p className="text-xs text-zinc-400 mt-1">{brokenAcceleratorCount} broken or unreachable in the latest sweep.</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-zinc-900/45 px-4 py-3">
               <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Validation Engine</div>
               <div className="text-sm md:text-base font-semibold leading-snug">{validationEngineLabel}</div>
-              <p className="text-xs text-zinc-400 mt-1">Server-side model validation with safe fallback if the model path fails.</p>
+              <p className="text-xs text-zinc-400 mt-1">{validationEngineNote}</p>
             </div>
           </div>
         </header>

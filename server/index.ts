@@ -7,6 +7,8 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import { GoogleGenAI } from '@google/genai';
 import { fileURLToPath } from 'node:url';
+import { getFundingProgramsWithDiscovery } from '../lib/fundingDiscovery.js';
+import { LiveWebSearchInputError, runLiveWebSearch } from '../lib/liveWebSearch.js';
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,6 +46,14 @@ const validateRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many validation requests. Please retry later.' },
+});
+
+const liveSearchRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: Number(process.env.LIVE_SEARCH_RATE_LIMIT_MAX || 30),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many live search requests. Please retry later.' },
 });
 
 app.disable('x-powered-by');
@@ -134,8 +144,13 @@ async function loadFundingPrograms(): Promise<Array<{ name: string; url: string;
 
 app.get('/api/funding-programs', async (_req: Request, res: Response) => {
   try {
-    const programs = await loadFundingPrograms();
-    return res.json({ programs });
+    const basePrograms = await loadFundingPrograms();
+    const result = await getFundingProgramsWithDiscovery(basePrograms, {
+      apiKey,
+      refreshIntervalHours: Number(process.env.DISCOVERY_REFRESH_HOURS || 12),
+    });
+
+    return res.json(result);
   } catch (error) {
     console.error('[server] Failed to load funding programs:', error);
     return res.status(500).json({ error: 'Unable to load funding programs dataset.' });
@@ -222,6 +237,38 @@ Return strict JSON with fields: "isLive" (boolean), "confirmedUrl" (string), and
   } catch (error) {
     console.error('[server] Validation failure:', error);
     return runDeterministicFallback();
+  }
+});
+
+app.post('/api/live-search', liveSearchRateLimit, async (req: Request, res: Response) => {
+  const { query, maxResults } = req.body ?? {};
+
+  if (typeof query !== 'string') {
+    return res.status(400).json({ error: 'Invalid payload. Expected query as string.' });
+  }
+
+  if (!apiKey) {
+    return res.status(503).json({ error: 'Live web search is unavailable: GEMINI_API_KEY is not configured.' });
+  }
+
+  try {
+    const result = await runLiveWebSearch({
+      apiKey,
+      query,
+      maxResults: typeof maxResults === 'number' ? maxResults : undefined,
+    });
+
+    return res.json({
+      ...result,
+      source: 'gemini-google-search',
+    });
+  } catch (error) {
+    if (error instanceof LiveWebSearchInputError) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    console.error('[server] Live web search failure:', error);
+    return res.status(502).json({ error: 'Live web search provider request failed.' });
   }
 });
 

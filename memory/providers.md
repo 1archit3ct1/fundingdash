@@ -12,3 +12,10 @@
 - Restrict backend CORS to the deployed frontend origin.
 - Add Azure budget alerts and monthly spend thresholds before public rollout.
 - Re-validate pricing/credit limits before each production change; free-credit terms may vary.
+
+## Live Search Platform Notes
+
+- Gemini with Google Search remains the search provider; external platforms add storage/compute around it.
+- Supabase is the preferred first add-on for live search cache, audit logs, and per-user quotas with low ops overhead.
+- Oracle Cloud Always Free is useful for scheduled/background enrichment workers when Vercel function limits become a bottleneck.
+- Keep all provider credentials in runtime secret stores only; never commit keys into repo files.

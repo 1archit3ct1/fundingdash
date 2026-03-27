@@ -109,8 +109,10 @@ Use this contract to keep secrets server-side and frontend configuration explici
 ### Backend Secret / Runtime Variables
 
 - `GEMINI_API_KEY` (required in production): Gemini key for server-side validation only.
+- `DISCOVERY_REFRESH_HOURS` (optional): cadence for live discovery refreshes, default `12` for twice-daily updates.
 - `SERVER_PORT` (optional): API listen port, default `8787`.
 - `VALIDATION_RATE_LIMIT_MAX` (optional): per-IP limit for `/api/validate` per 15 minutes.
+- `LIVE_SEARCH_RATE_LIMIT_MAX` (optional): per-IP limit for `/api/live-search` per 15 minutes.
 - `CORS_ALLOWLIST` (optional): comma-separated allowed origins for API requests.
 - `APP_URL` (optional): canonical app URL for callbacks/self-referential links.
 
@@ -119,3 +121,47 @@ Use this contract to keep secrets server-side and frontend configuration explici
 - Never expose backend secrets to browser bundles.
 - Only variables prefixed with `VITE_` may be referenced by frontend code.
 - Keep production values in hosting platform settings, not in committed `.env` files.
+
+## Live Web Search API (Vercel + Local)
+
+FundingDash now exposes a backend-only live web search endpoint powered by Gemini with Google Search tool use.
+
+- Route: `POST /api/live-search`
+- Runtime secret required: `GEMINI_API_KEY`
+- Request body: `{ "query": "<search string>", "maxResults": 5 }`
+- Response shape: `{ "searchSummary": "...", "results": [{ "title": "...", "url": "...", "snippet": "...", "sourceDomain": "..." }], "source": "gemini-google-search" }`
+
+Example request:
+
+```bash
+curl -X POST "https://fundingdash.vercel.app/api/live-search" \
+   -H "Content-Type: application/json" \
+   -d '{"query":"top startup accelerators accepting applications now","maxResults":5}'
+```
+
+### Vercel Setup (Safe)
+
+1. Add `GEMINI_API_KEY` in Vercel Project Settings -> Environment Variables.
+2. Optionally set `DISCOVERY_REFRESH_HOURS`, `VALIDATION_RATE_LIMIT_MAX`, and `LIVE_SEARCH_RATE_LIMIT_MAX`.
+3. Redeploy and verify `/api/health`, `/api/funding-programs`, and `/api/live-search`.
+4. Keep all secrets in Vercel env settings only; do not commit keys.
+
+## Supabase vs Oracle for Live Web Search
+
+Both can add value, but neither replaces Gemini search itself.
+
+- Supabase: best fit for quick wins.
+   - Store search logs and cached search responses to reduce repeated Gemini calls.
+   - Add user-level quotas and analytics using Postgres tables + Row Level Security.
+   - Good when you want minimal ops overhead on Vercel.
+
+- Oracle Cloud Always Free: best fit for heavier backend workloads.
+   - Host a long-running worker/cron for pre-warming search cache and scheduled discovery.
+   - Useful when you need larger free compute for background jobs than Vercel Hobby allows.
+   - Higher setup/ops complexity than Supabase.
+
+Recommended path:
+
+1. Keep Gemini web search in Vercel server routes as implemented.
+2. Add Supabase for cache + telemetry first.
+3. Use Oracle only if scheduled/background processing outgrows Vercel limits.
