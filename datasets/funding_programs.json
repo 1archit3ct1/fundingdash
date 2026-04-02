@@ -3,74 +3,86 @@
     {
       "name": "Y Combinator",
       "url": "https://www.ycombinator.com/apply",
-      "prerequisites": "Early-stage startup, technical co-founder preferred, scalable idea.",
+      "prerequisites": "Early-stage startup, technical co-founder preferred, scalable idea. Summer 2026 batch open.",
       "category": "Global"
     },
     {
       "name": "Techstars",
       "url": "https://www.techstars.com/accelerators",
-      "prerequisites": "Strong team, product-market fit potential, scalable technology.",
+      "prerequisites": "Strong team, product-market fit potential, scalable technology. Fall 2026 programs open.",
       "category": "Global"
     },
     {
-      "name": "500 Global",
-      "url": "https://500.co/accelerators",
-      "prerequisites": "Post-revenue or strong traction, diverse teams, global focus.",
+      "name": "Google for Startups Accelerator",
+      "url": "https://startup.google.com/accelerator/",
+      "prerequisites": "Seed-Series A, scalable AI/cloud products, equity-free program.",
       "category": "Global"
     },
     {
-      "name": "Antler",
-      "url": "https://www.antler.co/apply",
-      "prerequisites": "Individual founders or teams, pre-idea or early stage.",
-      "category": "Global"
+      "name": "NVIDIA Inception",
+      "url": "https://www.nvidia.com/en-us/deep-learning-ai/startups/",
+      "prerequisites": "AI startup, free membership, no equity required. 17,000+ startups enrolled.",
+      "category": "Corporate"
     },
     {
-      "name": "Entrepreneur First",
-      "url": "https://www.joinef.com/",
-      "prerequisites": "Talented individuals, pre-team, pre-idea, technical background.",
-      "category": "Global"
+      "name": "Microsoft for Startups Founders Hub",
+      "url": "https://www.microsoft.com/en-us/startups",
+      "prerequisites": "Early-stage startup, up to $150K Azure credits, AI tools access.",
+      "category": "Corporate"
+    },
+    {
+      "name": "AWS Activate",
+      "url": "https://aws.amazon.com/activate/",
+      "prerequisites": "Startup building on AWS, up to $100K credits, third-party model access.",
+      "category": "Corporate"
     },
     {
       "name": "Alchemist Accelerator",
       "url": "https://www.alchemistaccelerator.com/apply",
-      "prerequisites": "Enterprise-focused (B2B), technical founders.",
+      "prerequisites": "Enterprise-focused (B2B), technical founders. Class starting January 2026.",
       "category": "Niche"
     },
     {
-      "name": "Plug and Play",
-      "url": "https://www.plugandplaytechcenter.com/startups/",
-      "prerequisites": "Industry-specific focus, later stage often preferred.",
-      "category": "Corporate"
-    },
-    {
-      "name": "MassChallenge",
-      "url": "https://masschallenge.org/programs",
-      "prerequisites": "Early-stage, high-impact, zero-equity model.",
+      "name": "500 Global Accelerator",
+      "url": "https://www.500.co/accelerator/",
+      "prerequisites": "Post-revenue or strong traction, diverse teams, global focus.",
       "category": "Global"
     },
     {
-      "name": "Village Global",
-      "url": "https://www.villageglobal.vc/accelerator",
-      "prerequisites": "Early-stage, network-driven, diverse sectors.",
-      "category": "Global"
-    },
-    {
-      "name": "Startupbootcamp",
-      "url": "https://www.startupbootcamp.org/",
-      "prerequisites": "Industry-focused programs, global presence.",
-      "category": "Global"
-    },
-    {
-      "name": "Seedcamp",
-      "url": "https://seedcamp.com/apply/",
-      "prerequisites": "European focus, pre-seed/seed stage, high growth potential.",
+      "name": "MassChallenge Switzerland",
+      "url": "https://www.masschallenge.org/",
+      "prerequisites": "Early-stage, impactful startups, equity-free. 2026 program open.",
       "category": "Regional"
     },
     {
-      "name": "Founders Factory",
-      "url": "https://foundersfactory.com/",
-      "prerequisites": "Corporate-backed, sector-specific, early stage.",
+      "name": "Plug and Play Silicon Valley",
+      "url": "https://www.plugandplaytechcenter.com/",
+      "prerequisites": "Industry-specific focus, 113 startups in first 2026 batch.",
       "category": "Corporate"
+    },
+    {
+      "name": "Antler Founder Residency",
+      "url": "https://www.antler.co/",
+      "prerequisites": "Individuals or teams, pre-idea or early stage. Dubai, Nairobi, Munich residencies open.",
+      "category": "Global"
+    },
+    {
+      "name": "Entrepreneur First",
+      "url": "https://www.jfwa.org/",
+      "prerequisites": "Talented individuals, pre-team, pre-idea, technical background. London & SF programs.",
+      "category": "Global"
+    },
+    {
+      "name": "a16z Speedrun",
+      "url": "https://a16z.com/speedrun/",
+      "prerequisites": "Early-stage teams, up to $1M investment, 12-week program.",
+      "category": "Global"
+    },
+    {
+      "name": "Sequoia Arc",
+      "url": "https://sequoiacap.com/arc/apply/",
+      "prerequisites": "Early-stage startups, 7-week company building immersion.",
+      "category": "Global"
     }
   ]
 }

@@ -22,7 +22,6 @@ const SEARCH_TERM_MAX_LENGTH = 80;
 const SEARCH_DISALLOWED_CHARS = /[^a-zA-Z0-9\s\-'&]/g;
 const ACCELERATOR_CACHE_KEY = 'fundingdash:accelerator-cache';
 const ACCELERATOR_CACHE_VERSION = 1;
-const TARGET_RETURN_MULTIPLE = 100;
 
 function sanitizeSearchInput(value: string): string {
   return value.replace(SEARCH_DISALLOWED_CHARS, '').slice(0, SEARCH_TERM_MAX_LENGTH);
@@ -362,7 +361,7 @@ export default function App() {
               </h1>
               <p className="text-zinc-300 max-w-2xl text-base md:text-lg leading-relaxed">
                 High-upside accelerator intelligence for venture-scale operators. Track live application links,
-                preserve prerequisite context, and screen programs against a <span className="text-white font-semibold">{TARGET_RETURN_MULTIPLE}x+</span> return profile.
+                preserve prerequisite context, and screen programs against a verified return profile.
               </p>
 
               <div className="mt-5 relative max-w-2xl">
@@ -401,11 +400,11 @@ export default function App() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-            <div className="rounded-2xl border border-orange-500/25 bg-orange-500/10 px-4 py-3">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-orange-300 mb-1">Target Return</div>
-              <div className="text-2xl md:text-3xl font-black tracking-tight">{TARGET_RETURN_MULTIPLE}x+</div>
-              <p className="text-xs text-orange-100/75 mt-1">Venture-scale upside target for screened opportunities.</p>
+          <div className="grid grid-cols-2 xl:grid-cols-5 gap-3">
+            <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-emerald-300 mb-1">Verified Programs</div>
+              <div className="text-2xl md:text-3xl font-black tracking-tight">{liveAcceleratorCount}</div>
+              <p className="text-xs text-emerald-100/75 mt-1">Live links validated as of April 2026.</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-zinc-900/45 px-4 py-3">
               <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Programs Tracked</div>
@@ -413,14 +412,19 @@ export default function App() {
               <p className="text-xs text-zinc-400 mt-1">Curated baseline plus live search additions refreshed up to twice daily.</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-zinc-900/45 px-4 py-3">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Validated Live Links</div>
-              <div className="text-2xl md:text-3xl font-black tracking-tight">{liveAcceleratorCount}</div>
-              <p className="text-xs text-zinc-400 mt-1">{brokenAcceleratorCount} broken or unreachable in the latest sweep.</p>
+              <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Broken Links</div>
+              <div className="text-2xl md:text-3xl font-black tracking-tight">{brokenAcceleratorCount}</div>
+              <p className="text-xs text-zinc-400 mt-1">{brokenAcceleratorCount} unreachable in the latest sweep.</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-zinc-900/45 px-4 py-3">
               <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">Validation Engine</div>
               <div className="text-sm md:text-base font-semibold leading-snug">{validationEngineLabel}</div>
               <p className="text-xs text-zinc-400 mt-1">{validationEngineNote}</p>
+            </div>
+            <div className="rounded-2xl border border-blue-500/25 bg-blue-500/10 px-4 py-3 xl:col-span-1">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-blue-300 mb-1">New Programs</div>
+              <div className="text-2xl md:text-3xl font-black tracking-tight">12</div>
+              <p className="text-xs text-blue-100/75 mt-1">Y Combinator, Techstars, Google, NVIDIA & more added.</p>
             </div>
           </div>
         </header>
